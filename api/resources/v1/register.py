@@ -121,8 +121,10 @@ class RegisterResource(ModelResource):
             last_name = bundle.data['lastname']
 
         try:
-            bundle.obj = User.objects.create_user(username, email, password)
+            bundle.obj = User.objects.create_user(username=username,
+                                                  password=password)
             bundle.obj.first_name = first_name
+            bundle.obj.email = email
             bundle.obj.last_name = last_name
             bundle.obj.save()
         except IntegrityError:
