@@ -2,6 +2,7 @@
 {% load display_functions %}
 
 <tr id="{{ user.username }}">
+    <td>{{ forloop.counter }}</td>
     <td>{{user.username}}</td>
     <td>{% if OPPIA_SHOW_GRAVATARS %} {{ user|gravatar:24 }} {% endif %}
         <a href="{% url 'profile:user_activity' user.id %}">{{ user.first_name }} {{ user.last_name }}</a>
