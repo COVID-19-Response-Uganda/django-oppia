@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views import View
 from tastypie.models import ApiKey
+from django.http import HttpResponse
 
 import profile
 from oppia.models import Points, Award, Tracker
@@ -94,6 +95,29 @@ def export_users(request):
                   {'page': users,
                    'page_ordering': ordering,
                    'users_list_template': 'export'})
+
+@staff_member_required
+def export_all_users(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="allusers.csv"' 
+    writer = csv.writer(response)
+    # write the header first
+    heading = ["First Name", "Last Name", "Username", "Email", "Job Title", "Organization", "Phone Numer"]
+    writer.writerow(heading)
+    users = User.objects.filter(is_superuser=False)
+    for user in users:
+        mylist = []
+        mylist.append(user.first_name)
+        mylist.append(user.last_name)
+        mylist.append(user.username)
+        mylist.append(user.email)
+        mylist.append(user.userprofile.job_title)
+        mylist.append(user.userprofile.organisation)
+        mylist.append(user.userprofile.phone_number)
+        writer.writerow(mylist)
+
+    return response
+
 
 
 @staff_member_required

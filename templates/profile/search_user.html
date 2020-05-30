@@ -40,5 +40,8 @@
 <div class="search-block">
 {% include "profile/users-paginated-list.html" %}
 </div>
+<div>
+    <a class="btn btn-sm btn-primary btn-download" href="{% url 'profile:exportallusers' %}" role="button"><em class="fas fa-download"></em> {% trans 'Download users CSV' %}</a>
+</div>
 
 {% endblock content %}

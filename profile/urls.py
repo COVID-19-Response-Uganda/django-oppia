@@ -48,6 +48,7 @@ urlpatterns = [
     path('upload/', profile_views.UploadUsers.as_view(), name="upload"),
     path('search/', profile_views.search_users, name="search"),
     path('export/', profile_views.export_users, name="export"),
+    path('exportallusers/', profile_views.export_all_users, name="exportallusers"),
     path('list/', profile_views.list_users, name="list"),
 
     path('delete/<int:user_id>/', profile_views.delete_account_view, name="delete"),

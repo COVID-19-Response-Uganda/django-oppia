@@ -97,3 +97,8 @@ def get_tracker_activities(start_date,
         activity.append([temp_date, count])
 
     return activity
+
+def get_users_with_specific_fields():
+    users = User.objects.all().values_list("first_name", "last_name", "email", "phone_number", "organisation", "job_title")
+    return users
+
