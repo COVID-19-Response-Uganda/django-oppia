@@ -25,6 +25,8 @@ from profile.views.utils import get_paginated_users, \
                                 get_query
 from quiz.models import QuizAttempt, QuizAttemptResponse
 
+from datetime import datetime
+
 
 @staff_member_required
 def search_users(request):
@@ -102,9 +104,9 @@ def export_all_users(request):
     response['Content-Disposition'] = 'attachment; filename="allusers.csv"' 
     writer = csv.writer(response)
     # write the header first
-    heading = ["First Name", "Last Name", "Username", "Email", "Job Title", "Organization", "Phone Numer"]
+    heading = ["First Name", "Last Name", "Username", "Email", "Job Title", "Organization", "Phone Numer", "Registration Date"]
     writer.writerow(heading)
-    users = User.objects.filter(is_superuser=False)
+    users = User.objects.filter(is_superuser=False).order_by('-date_joined')
     for user in users:
         mylist = []
         mylist.append(user.first_name)
@@ -114,6 +116,9 @@ def export_all_users(request):
         mylist.append(user.userprofile.job_title)
         mylist.append(user.userprofile.organisation)
         mylist.append(user.userprofile.phone_number)
+        datejoined = user.date_joined
+        datestr = datejoined.strftime("%d/%m/%Y")
+        mylist.append(datestr)
         writer.writerow(mylist)
 
     return response
