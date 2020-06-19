@@ -47,6 +47,7 @@ class Command(BaseCommand):
             % (CARTODB_TABLE, source_site)}
         url = self.CARTO_DB_QUERY % (cartodb_account,
                                      urlencode(payload, quote_via=quote_plus))
+        print(url)
         u = urllib.request.urlopen(url)
         data = u.read()
         carto_db_data = json.loads(data)
