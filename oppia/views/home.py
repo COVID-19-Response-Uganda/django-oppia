@@ -25,6 +25,7 @@ from profile.models import UserProfile
 
 STR_DATE_FORMAT = "%d %b %Y"
 
+
 def server_view(request):
     return render(request, 'oppia/server.html',
                   {'settings': settings},
@@ -40,7 +41,8 @@ def home_view(request):
 
     if request.user.is_authenticated:
 
-        # create profile if none exists (for first admin user login and historical for very old users)
+        # create profile if none exists (for first admin user login and
+        # historical for very old users)
         try:
             request.user.userprofile
         except UserProfile.DoesNotExist:
@@ -172,6 +174,8 @@ def teacher_home_view(request):
                      for dct in trackers
                      if dct['day'].strftime(STR_DATE_FORMAT) == temp_date), 0)
         activity.append([temp.strftime(STR_DATE_FORMAT), count])
+
+    dashboard_accessed.send(sender=None, request=request, data=None)
 
     return render(request, 'oppia/home-teacher.html',
                   {'cohorts': cohorts,

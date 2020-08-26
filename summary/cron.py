@@ -1,7 +1,6 @@
 
 import time
 
-from datetime import date
 from django.utils import timezone
 
 
@@ -23,6 +22,14 @@ def update_summaries(last_tracker_pk=0, last_points_pk=0):
     if not created:
         print("Oppia summary cron is already running")
         return
+
+    try:
+        SettingProperties.objects.get(key='oppia_cron_lock')
+        print("Oppia cron is already running")
+        return
+    except SettingProperties.DoesNotExist:
+        # do nothing
+        pass
 
     SettingProperties.set_string('oppia_summary_cron_last_run',
                                  timezone.now())

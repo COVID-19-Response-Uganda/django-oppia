@@ -2,11 +2,10 @@
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 
-from oppia.test import OppiaTestCase
-
 from tastypie.test import ResourceTestCaseMixin
 
 from tests.utils import get_api_key, get_api_url
+
 
 class MediaResourceTest(ResourceTestCaseMixin, TransactionTestCase):
 
@@ -15,7 +14,6 @@ class MediaResourceTest(ResourceTestCaseMixin, TransactionTestCase):
                 'tests/test_quiz.json',
                 'tests/test_permissions.json',
                 'tests/test_av_uploadedmedia.json']
-
 
     def setUp(self):
         super(MediaResourceTest, self).setUp()
@@ -74,11 +72,11 @@ class MediaResourceTest(ResourceTestCaseMixin, TransactionTestCase):
         self.assertEqual(82, response_data['length'])
         self.assertEqual('ldrshp-mgmt-unit-2-risk-mgmt-D-v2.m4v',
                          response_data['filename'])
-        self.assertEqual('http://testserver/media/uploaded/2018/02/ldrshp-mgmt-unit-2-risk-mgmt-D-v2.m4v',
+        self.assertEqual('http://testserver/media/uploaded/2018/02/' +
+                         'ldrshp-mgmt-unit-2-risk-mgmt-D-v2.m4v',
                          response_data['download_url'])
         self.assertEqual(0,
                          response_data['filesize'])
-
 
     # test get with md5 that doesn;t exist
     def test_media_not_uploaded(self):
@@ -86,4 +84,3 @@ class MediaResourceTest(ResourceTestCaseMixin, TransactionTestCase):
         response = self.api_client.get(
             url, format='json', data=self.user_auth)
         self.assertEqual(404, response.status_code)
-

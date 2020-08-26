@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, ListView
@@ -77,12 +77,13 @@ class CourseListView(ListView, AjaxTemplateResponseMixin):
                     course_stats.remove(stats)
 
         context['page_ordering'] = self.get_ordering()
-        context['tag_list'] = Tag.objects.all().exclude(coursetag=None).order_by('name')
+        context['tag_list'] = Tag.objects.all() \
+            .exclude(coursetag=None) \
+            .order_by('name')
         context['current_tag'] = self.get_current_tag()
         context['course_filter'] = self.get_filter()
 
         return context
-
 
 
 class CourseDownload(TemplateView):
@@ -201,4 +202,16 @@ class CourseStructure(TemplateView):
         course = Course.objects.get(pk=course_id)
 
         return render(request, 'course/structure.html',
-                  {'course': course})
+                      {'course': course})
+
+
+class CourseDataExports(TemplateView):
+
+    def get(self, request, course_id):
+        if (not can_edit_course(request, course_id)):
+            raise PermissionDenied
+
+        course = get_object_or_404(Course, pk=course_id)
+
+        return render(request, 'course/export.html',
+                      {'course': course})

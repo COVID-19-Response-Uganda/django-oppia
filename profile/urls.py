@@ -51,7 +51,9 @@ urlpatterns = [
     path('exportallusers/', profile_views.export_all_users, name="exportallusers"),
     path('list/', profile_views.list_users, name="list"),
 
-    path('delete/<int:user_id>/', profile_views.delete_account_view, name="delete"),
+    path('delete/<int:user_id>/',
+         profile_views.delete_account_view,
+         name="delete"),
     path('delete/complete/',
          profile_views.delete_account_complete_view,
          name="delete_complete"),
