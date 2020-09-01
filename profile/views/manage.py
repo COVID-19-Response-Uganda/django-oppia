@@ -3,7 +3,7 @@ import csv
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
@@ -19,7 +19,7 @@ from oppia.models import Points, Award, Tracker
 from profile.forms import UploadProfileForm, \
     UserSearchForm, \
     DeleteAccountForm
-from profile.models import UserProfile
+from profile.models import UserProfile, UserProfileCustomField, CustomField
 from profile.views.utils import get_paginated_users, \
                                 get_filters_from_row, \
                                 get_query
@@ -104,21 +104,35 @@ def export_all_users(request):
     response['Content-Disposition'] = 'attachment; filename="allusers.csv"' 
     writer = csv.writer(response)
     # write the header first
-    heading = ["First Name", "Last Name", "Username", "Email", "Job Title", "Organization", "Phone Numer", "Registration Date"]
-    writer.writerow(heading)
+    heading = ["First Name", "Last Name", "Username", "Email",  "Phone Numer", "Registration Date"]
+    # add custom field labels to heading
     users = User.objects.filter(is_superuser=False).order_by('-date_joined')
+    custom_fields = CustomField.objects.all()
+    for custom_field in custom_fields:
+        heading.append(custom_field.label)
+    writer.writerow(heading)
+    
     for user in users:
         mylist = []
         mylist.append(user.first_name)
         mylist.append(user.last_name)
         mylist.append(user.username)
         mylist.append(user.email)
-        mylist.append(user.userprofile.job_title)
-        mylist.append(user.userprofile.organisation)
         mylist.append(user.userprofile.phone_number)
         datejoined = user.date_joined
         datestr = datejoined.strftime("%d/%m/%Y")
         mylist.append(datestr)
+       
+        # add custom fields
+        for custom_field in custom_fields:
+            try:
+                row = UserProfileCustomField.objects.get(key_name=custom_field, user=user)
+                # print(row.value_str)
+                mylist.append(row.value_str)
+            except ObjectDoesNotExist:
+                row = None
+                mylist.append(row)
+                # print(row)
         writer.writerow(mylist)
 
     return response
