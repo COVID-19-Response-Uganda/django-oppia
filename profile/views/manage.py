@@ -104,7 +104,7 @@ def export_all_users(request):
     response['Content-Disposition'] = 'attachment; filename="allusers.csv"' 
     writer = csv.writer(response)
     # write the header first
-    heading = ["First Name", "Last Name", "Username", "Email",  "Phone Numer", "Registration Date"]
+    heading = ["First Name", "Last Name", "Username", "Email",  "Phone Number", "Registration Date"]
     # add custom field labels to heading
     users = User.objects.filter(is_superuser=False).order_by('-date_joined')
     custom_fields = CustomField.objects.all()
