@@ -18,7 +18,7 @@
 	function drawChart() {
 
 		var data = new google.visualization.DataTable();
-		data.addColumn('date', "{% trans 'Date' %}");
+		data.addColumn('string', "{% trans 'Date' %}");
 		data.addColumn('number', "{% trans 'Total' %}");
 		data.addColumn('number', "{% trans 'Page completed' %}");
 		data.addColumn('number', "{% trans 'Quiz completed' %}");
@@ -26,13 +26,17 @@
 		data.addColumn('number', "{% trans 'Resources viewed' %}");
 		data.addRows( {{ data|length }} );
 		
-		{% for date,activity in data %}
-			data.setValue({{ forloop.counter0 }},0,new Date({{ date| date:'Y' }},{{ date|date:'n' }}-1,{{date|date:'j'}}));
-			data.setValue({{ forloop.counter0 }},1,{{ activity.total }});
-			data.setValue({{ forloop.counter0 }},2,{{ activity.page }});
-			data.setValue({{ forloop.counter0 }},3,{{ activity.quiz }});
-			data.setValue({{ forloop.counter0 }},4,{{ activity.media }});
-			data.setValue({{ forloop.counter0 }},5,{{ activity.resource }});
+		{% for date, activity in data %}
+			{% if monthly %}
+				data.setValue({{ forloop.counter0 }}, 0, "{{ date| date:'F Y' }}");
+			{% else %}
+				data.setValue({{ forloop.counter0 }}, 0, "{{ date| date:'j M Y' }}");
+			{% endif %}
+			data.setValue({{ forloop.counter0 }}, 1, {{ activity.total }});
+			data.setValue({{ forloop.counter0 }}, 2 ,{{ activity.page }});
+			data.setValue({{ forloop.counter0 }}, 3, {{ activity.quiz }});
+			data.setValue({{ forloop.counter0 }}, 4, {{ activity.media }});
+			data.setValue({{ forloop.counter0 }}, 5, {{ activity.resource }});
 		{% endfor %}
 
 		var chartOptions = {
@@ -83,33 +87,7 @@
 <div class="row">
 	<div class="col-lg-4 d-none d-lg-block">
 		<div class="card" style="margin-top:-5.5rem;">
-			<div class="card-header">
-				<h6 class="card-title">{{ course.title|title_lang:LANGUAGE_CODE }}
-				{% if course.is_draft %}
-					<span class="badge badge-dark badge-sm ml-2"><small>{% trans 'draft' %}</small></span>
-				{% endif %}
-				{% if course.is_archived %}
-					<span class="badge badge-dark badge-sm ml-2"><small>{% trans 'archived' %}</small></span>
-				{% endif %}
-				</h6>
-				<h6 class="card-subtitle mb-2 text-muted"><em>{% trans 'Tags:' %} {{ course.get_tags}}</em></h6>
-			</div>
-			<div class="card-body">
-
-				<div class="card-text">
-					<p>
-						{{ course.description|title_lang:LANGUAGE_CODE|default_if_none:"No description"  }}
-					</p>
-					<strong class="text-black-50">{% trans 'Shortname:' %}</strong> <code>{{ course.shortname }}</code><br>
-					<strong class="text-black-50">{% trans 'Version:' %}</strong> <code>{{ course.version }}</code><br>
-					<strong class="text-black-50">{% trans 'Created:' %} </strong> {{ course.created_date }}<br>
-					<strong class="text-black-50">{% trans 'Last updated:' %} </strong> {{ course.lastupdated_date }}<br>
-					<a href="{% url 'oppia:course_download' course.id %}" class="btn btn-primary mt-3 mb-2"><em class="fas mr-2 fa-arrow-down"></em> {% trans 'Download course' %}</a><br>
-					{{ download_stats.total|default:0 }} downloads by {{ download_stats.distinct|default:0 }} users<br/>
-
-				</div>
-
-			</div>
+			{% include "course/detail_card.html" with course=course extended=True %}
 
 			<div class="list-group list-group-flush">
 				<a href="{% url 'oppia:recent_activity_detail' course.pk %}" class="list-group-item list-group-item-action">
