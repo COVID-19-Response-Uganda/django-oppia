@@ -86,7 +86,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Kampala'
 USE_TZ = True
 SITE_ID = 1
 
