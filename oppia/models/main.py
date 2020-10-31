@@ -45,6 +45,7 @@ class Course(models.Model):
     class Meta:
         verbose_name = _('Course')
         verbose_name_plural = _('Courses')
+        ordering = ['title']
 
     def __str__(self):
         return self.get_title(self)
@@ -228,13 +229,22 @@ class Course(models.Model):
         return max(event_viewed, tracker_viewed)
 
 
-class CourseManager(models.Model):
+class CoursePermissions(models.Model):
+
+    MANAGER = 'manager'
+    VIEWER = 'viewer'
+    ROLE_TYPES = (
+        (MANAGER, 'Manager'),
+        (VIEWER, 'Viewer')
+    )
+
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=ROLE_TYPES)
 
     class Meta:
-        verbose_name = _('Course Manager')
-        verbose_name_plural = _('Course Managers')
+        verbose_name = _('Course Permission')
+        verbose_name_plural = _('Course Permissions')
 
 
 class Section(models.Model):

@@ -19,12 +19,15 @@ class AnonymizeTest(OppiaTestCase):
                 'default_gamification_events.json',
                 'tests/test_tracker.json',
                 'tests/test_permissions.json',
-                'default_badges.json']
+                'default_badges.json',
+                'tests/test_course_permissions.json']
+
+    STR_NO_INPUT = '--noinput'
 
     def test_anonymize(self):
         out = StringIO()
         settings.DEBUG = True
-        call_command('anonymize', '--noinput=True', stdout=out)
+        call_command('anonymize', self.STR_NO_INPUT, stdout=out)
 
         # username admin
         user = User.objects.get(pk=self.admin_user.pk)
@@ -51,7 +54,7 @@ class AnonymizeTest(OppiaTestCase):
     def test_anonymize_not_debug(self):
         out = StringIO()
         settings.DEBUG = False
-        call_command('anonymize', '--noinput=True', stdout=out)
+        call_command('anonymize', self.STR_NO_INPUT, stdout=out)
 
         # username admin
         user = User.objects.get(pk=self.admin_user.pk)
@@ -78,7 +81,7 @@ class AnonymizeTest(OppiaTestCase):
 
         out = StringIO()
         settings.DEBUG = True
-        call_command('anonymize', '--noinput=True', stdout=out)
+        call_command('anonymize', self.STR_NO_INPUT, stdout=out)
 
         self.assertRaises(IntegrityError)
         self.assertRaises(UserProfile.DoesNotExist)

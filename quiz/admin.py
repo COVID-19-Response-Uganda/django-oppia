@@ -11,6 +11,7 @@ from quiz.models import Quiz, \
                         QuizAttempt, \
                         QuizAttemptResponse
 
+from quiz import constants
 
 class QuizAttemptAdmin(admin.ModelAdmin):
     list_display = ('user',
@@ -41,8 +42,26 @@ class QuestionAdmin(admin.ModelAdmin):
                     'title',
                     'type',
                     'created_date',
-                    'lastupdated_date')
+                    'lastupdated_date',
+                    'no_responses',
+                    'difficulty_index',
+                    'discrimination_index')
     search_fields = ['title']
+    
+    def no_responses(self, obj):
+        return obj.get_no_responses()
+
+    def difficulty_index(self, obj):
+        if obj.get_no_responses() < constants.MIN_NO_RESPONSES_FOR_INDICES:
+            return "--"
+        else:
+            return "%0.2f" % obj.get_difficulty_index()
+
+    def discrimination_index(self, obj):
+        if obj.get_no_responses() < constants.MIN_NO_RESPONSES_FOR_INDICES:
+            return "--"
+        else:
+            return "%0.0f %%" % obj.get_discrimination_index()
 
 
 class QuizAttemptResponseAdmin(admin.ModelAdmin):

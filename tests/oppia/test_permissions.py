@@ -1,14 +1,17 @@
 
 from django.urls import reverse
 from oppia.test import OppiaTestCase
-from oppia.permissions import is_manager
+from oppia.permissions import is_manager_only
 
 
 class PermissionsViewTest(OppiaTestCase):
     fixtures = ['tests/test_user.json',
                 'tests/test_oppia.json',
                 'tests/test_quiz.json',
-                'tests/test_permissions.json']
+                'tests/test_permissions.json',
+                'tests/test_course_permissions.json']
+
+    STR_ADMIN_INDEX = 'admin:index'
 
     def assert_response(self, view, status_code, user=None, view_kwargs=None):
         route = reverse(view, kwargs=view_kwargs)
@@ -38,17 +41,17 @@ class PermissionsViewTest(OppiaTestCase):
     # Django admin
 
     def test_anon_cantview_admin(self):
-        self.assert_must_login('admin:index')
+        self.assert_must_login(self.STR_ADMIN_INDEX)
 
     def test_admin_canview_admin(self):
-        self.assert_can_view('admin:index', self.admin_user)
+        self.assert_can_view(self.STR_ADMIN_INDEX, self.admin_user)
 
     def test_staff_cantview_admin(self):
-        self.assert_can_view('admin:index', self.staff_user)
+        self.assert_can_view(self.STR_ADMIN_INDEX, self.staff_user)
 
     def test_student_cantview_admin(self):
         # Check that gets redirected to admin login
-        route = reverse('admin:index')
+        route = reverse(self.STR_ADMIN_INDEX)
         res = self.get_view(route, self.normal_user)
         self.assertRedirects(res, route + 'login/?next=' + route)
     # Upload courses view
@@ -292,13 +295,19 @@ class PermissionsViewTest(OppiaTestCase):
     # Test is_manager permissions
 
     def test_is_manager_admin(self):
-        self.assertTrue(is_manager(1, self.admin_user))
+        self.assertFalse(is_manager_only(self.admin_user))
 
     def test_is_manager_staff(self):
-        self.assertTrue(is_manager(1, self.staff_user))
+        self.assertFalse(is_manager_only(self.staff_user))
 
     def test_is_manager_teacher(self):
-        self.assertFalse(is_manager(1, self.teacher_user))
+        self.assertFalse(is_manager_only(self.teacher_user))
 
     def test_is_manager_user(self):
-        self.assertFalse(is_manager(1, self.normal_user))
+        self.assertFalse(is_manager_only(self.normal_user))
+
+    def test_is_manager_viewer(self):
+        self.assertFalse(is_manager_only(self.viewer_user))
+
+    def test_is_manager_manager(self):
+        self.assertTrue(is_manager_only(self.manager_user))

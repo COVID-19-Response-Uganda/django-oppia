@@ -2,19 +2,16 @@
 
 from itertools import chain
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponseForbidden
 
-from oppia.models import Course, Participant, Cohort
+from oppia.models import Course, Participant, Cohort, CoursePermissions
 from profile.models import UserProfile
 
 
 def can_upload(user):
-    if settings.OPPIA_STAFF_ONLY_UPLOAD is False \
-       or user.is_superuser \
-       or user.is_staff:
+    if user.is_superuser or user.is_staff:
         return True
     else:
         try:
@@ -90,22 +87,21 @@ def get_user_courses(request, view_user):
     return cohort_courses, other_courses, all_courses
 
 
-def is_manager(course_id, user):
-    try:
-        # check only the owner can view
-        if user.is_staff:
-            return True
-        else:
-            try:
-                Course.objects.get(pk=course_id, user=user)
-                return True
-            except Course.DoesNotExist:
-                Course.objects.get(pk=course_id,
-                                   coursemanager__course__id=course_id,
-                                   coursemanager__user=user)
-                return True
-    except Course.DoesNotExist:
+def is_manager_only(user):
+    # check only the owner can view
+    if user.is_staff:
         return False
+    else:
+        courses = Course.objects.filter(user=user).count()
+        if courses > 0:
+            return True
+
+        courses = Course.objects.filter(
+            coursepermissions__user=user,
+            coursepermissions__role=CoursePermissions.MANAGER).count()
+        if courses > 0:
+            return True
+    return False
 
 
 def can_add_cohort(request):
@@ -162,10 +158,10 @@ def can_view_course(request, course_id):
             except Course.DoesNotExist:
                 course = Course.objects.get(
                     pk=course_id,
-                    is_draft=False,
                     is_archived=False,
-                    coursemanager__course__id=course_id,
-                    coursemanager__user__id=request.user.id)
+                    coursepermissions__course__id=course_id,
+                    coursepermissions__user__id=request.user.id,
+                    coursepermissions__role=CoursePermissions.VIEWER)
     except Course.DoesNotExist:
         raise Http404
     return course
@@ -175,21 +171,47 @@ def can_view_course_detail(request, course_id):
     if request.user.is_staff:
         try:
             course = Course.objects.get(pk=course_id)
+            return course
         except Course.DoesNotExist:
             raise Http404
-        return course
     else:
-        raise PermissionDenied
+        try:
+            course = Course.objects.get(
+                        pk=course_id,
+                        coursepermissions__course__id=course_id,
+                        coursepermissions__user=request.user,
+                        coursepermissions__role=CoursePermissions.MANAGER)
+            return course
+        except Course.DoesNotExist:
+            raise PermissionDenied
 
 
 def can_edit_course(request, course_id):
-    return request.user.is_staff
+    if request.user.is_staff:
+        return True
+    else:
+        try:
+            Course.objects.get(
+                pk=course_id,
+                coursepermissions__course__id=course_id,
+                coursepermissions__user=request.user,
+                coursepermissions__role=CoursePermissions.MANAGER)
+            return True
+        except Course.DoesNotExist:
+            return False
 
 
 def can_view_courses_list(request, order_by='title'):
     if request.user.is_staff:
         courses = Course.objects.all().order_by(order_by)
     else:
+        manager_courses = Course.objects.filter(
+            coursepermissions__user=request.user,
+            coursepermissions__role=CoursePermissions.MANAGER) \
+            .order_by(order_by)
+        if manager_courses.count() > 0:
+            return manager_courses
+
         courses = Course.objects.filter(is_draft=False,
                                         is_archived=False).order_by(order_by)
     return courses

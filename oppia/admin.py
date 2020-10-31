@@ -1,4 +1,6 @@
 # oppia/admin.py
+import json
+
 from django.contrib import admin
 from oppia.models import Course, \
                          Section, \
@@ -6,7 +8,7 @@ from oppia.models import Course, \
                          Tracker, \
                          Media, \
                          Cohort, \
-                         CourseManager
+                         CoursePermissions
 from oppia.models import Participant, Tag, CourseTag
 from oppia.models import Badge, Award, Points, AwardCourse
 from oppia.models import CourseCohort, CoursePublishingLog
@@ -24,7 +26,7 @@ class TrackerAdmin(admin.ModelAdmin):
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title',
+    list_display = ('title_lang',
                     'shortname',
                     'version',
                     'lastupdated_date',
@@ -33,6 +35,9 @@ class CourseAdmin(admin.ModelAdmin):
                     'is_draft',
                     'is_archived')
     search_fields = ['title', 'shortname', 'version', 'filename']
+
+    def title_lang(self, obj):
+        return obj.get_title()
 
 
 class ParticipantAdmin(admin.ModelAdmin):
@@ -63,8 +68,11 @@ class PointsAdmin(admin.ModelAdmin):
 
 
 class ActivityAdmin(admin.ModelAdmin):
-    list_display = ('title', 'section', 'type', 'digest')
+    list_display = ('title_lang', 'section', 'type', 'digest')
     search_fields = ['title', 'type', 'digest']
+
+    def title_lang(self, obj):
+        return obj.get_title()
 
 
 class AwardCourseAdmin(admin.ModelAdmin):
@@ -88,8 +96,8 @@ class CoursePublishingLogAdmin(admin.ModelAdmin):
                     'data')
 
 
-class CourseManagerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'course')
+class CoursePermissionsAdmin(admin.ModelAdmin):
+    list_display = ('user', 'course', 'role')
 
 
 class MediaAdmin(admin.ModelAdmin):
@@ -126,5 +134,5 @@ admin.site.register(Points, PointsAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Tracker, TrackerAdmin)
-admin.site.register(CourseManager, CourseManagerAdmin)
+admin.site.register(CoursePermissions, CoursePermissionsAdmin)
 admin.site.register(CoursePublishingLog, CoursePublishingLogAdmin)
