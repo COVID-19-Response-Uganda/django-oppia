@@ -27,6 +27,7 @@ from profile.views.utils import get_paginated_users, \
 from quiz.models import QuizAttempt, QuizAttemptResponse
 
 from datetime import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 
 @staff_member_required
