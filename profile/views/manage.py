@@ -15,7 +15,7 @@ from tastypie.models import ApiKey
 from django.http import HttpResponse
 
 import profile
-from helpers.mixins.AdminRequiredMixin import AdminRequiredMixin
+from helpers.mixins.PermissionMixins import AdminRequiredMixin
 from oppia.models import Points, Award, Tracker
 from profile.forms import UploadProfileForm, \
     UserSearchForm, \

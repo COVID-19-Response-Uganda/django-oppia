@@ -8,7 +8,7 @@ from api.publish import publish_view
 
 from api.resources.awards import AwardsResource
 from api.resources.badges import BadgesResource
-from api.resources.course import CourseResource
+from api.resources.course import CourseResource, CourseStructureResource
 from api.resources.login import UserResource as UserResource
 from api.resources.points import PointsResource
 from api.resources.profile_update import ProfileUpdateResource
@@ -17,6 +17,7 @@ from api.resources.v2.register import RegisterResource as RegisterResourceV2
 from api.resources.reset_password import ResetPasswordResource
 from api.resources.tag import TagResource
 from api.resources.tracker import TrackerResource
+from api.resources.progress import UserCourseSummaryResource
 from quiz.api.resources import QuizAttemptResource
 
 
@@ -49,6 +50,8 @@ def get_api_v2():
     api.register(ResetPasswordResource())
     api.register(ProfileUpdateResource())
     api.register(QuizAttemptResource())
+    api.register(CourseStructureResource())
+    api.register(UserCourseSummaryResource())
     return api
 
 
