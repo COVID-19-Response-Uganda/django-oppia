@@ -1139,7 +1139,7 @@ msgstr ""
 #: templates/profile/export/points.html:6
 #: templates/profile/export/quiz_attempts.html:6
 msgid "app_name"
-msgstr "OppiaMobile"
+msgstr "MoH Capacity Building App"
 
 #: templates/base.html:42
 msgid "Cron tasks have not been run for over 7 days"
