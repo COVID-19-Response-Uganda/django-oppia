@@ -20,11 +20,7 @@ from oppia.models import Points, Award, Tracker
 from profile.forms import UploadProfileForm, \
     UserSearchForm, \
     DeleteAccountForm
-<<<<<<< HEAD
-from profile.models import UserProfile, UserProfileCustomField, CustomField
-=======
 from profile.models import UserProfile, CustomField, UserProfileCustomField
->>>>>>> upstream/master
 from profile.views.utils import get_paginated_users, \
     get_filters_from_row, \
     get_query
