@@ -63,7 +63,6 @@ TEMPLATES = [
 INSTALLED_APPS = [
     'quiz',
     'profile',
-    'content',
     'av',
     'settings',
     'summary',
@@ -174,6 +173,7 @@ OPPIA_METADATA = {
 
 # turns on/off ability for users to self register
 OPPIA_ALLOW_SELF_REGISTRATION = True
+OPPIA_ALLOW_PROFILE_EDITING = True
 OPPIA_SHOW_GRAVATARS = True
 
 # determines if the points system is enabled
@@ -193,7 +193,6 @@ OPPIA_MAX_UPLOAD_SIZE = 5242880  # max course file upload size - in bytes
 OPPIA_VIDEO_FILE_TYPES = ("video/m4v", "video/mp4", "video/3gp", "video/3gpp")
 OPPIA_AUDIO_FILE_TYPES = ("audio/mpeg", "audio/amr", "audio/mp3")
 OPPIA_MEDIA_FILE_TYPES = OPPIA_VIDEO_FILE_TYPES + OPPIA_AUDIO_FILE_TYPES
-OPPIA_MEDIA_IMAGE_FILE_TYPES = ("image/png", "image/jpeg")
 
 OPPIA_UPLOAD_TRACKER_FILE_TYPES = [("application/json")]
 

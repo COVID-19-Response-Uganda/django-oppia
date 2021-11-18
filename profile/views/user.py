@@ -155,6 +155,12 @@ class EditView(UpdateView):
     context_object_name = 'user'
     template_name = 'profile/profile.html'
 
+    def __init__(self,  **kwargs):
+        super().__init__(**kwargs)
+        self.allow_edit = SettingProperties \
+            .get_bool(constants.OPPIA_ALLOW_PROFILE_EDITING,
+                      settings.OPPIA_ALLOW_PROFILE_EDITING)
+
     def get_object(self, queryset=None):
         user_id = self.kwargs.get('user_id', )
         if user_id:
@@ -173,6 +179,7 @@ class EditView(UpdateView):
         """As it is not a ModelForm, we remove the instance argument"""
         kwargs = super().get_form_kwargs()
         kwargs.pop('instance')
+        kwargs.update({'allow_edit': self.allow_profile_editing()})
         return kwargs
 
     def get_initial(self):
@@ -180,13 +187,16 @@ class EditView(UpdateView):
         user_profile, created = UserProfile.objects \
             .get_or_create(user=self.object)
 
-        initial = {'username': self.object.username,
-                   'email': self.object.email,
-                   'first_name': self.object.first_name,
-                   'last_name': self.object.last_name,
-                   'api_key': key.key,
-                   'job_title': user_profile.job_title,
-                   'organisation': user_profile.organisation}
+        initial = {
+            'username': self.object.username,
+            'email': self.object.email,
+            'first_name': self.object.first_name,
+            'last_name': self.object.last_name,
+            'api_key': key.key,
+            'job_title': user_profile.job_title,
+            'organisation': user_profile.organisation,
+            'phone_number': user_profile.phone_number
+        }
 
         custom_fields = CustomField.objects.all()
         for custom_field in custom_fields:
@@ -198,8 +208,9 @@ class EditView(UpdateView):
         return initial
 
     def form_valid(self, form):
-        self.edit_form_process(form, self.object)
-        messages.success(self.request, _(u"Profile updated"))
+        if self.allow_profile_editing():
+            self.edit_form_process(form, self.object)
+            messages.success(self.request, _(u"Profile updated"))
 
         # if password should be changed
         password = form.cleaned_data.get("password", )
@@ -209,6 +220,9 @@ class EditView(UpdateView):
             messages.success(self.request, _(u"Password updated"))
 
         return self.render_to_response(self.get_context_data(form=form))
+
+    def allow_profile_editing(self):
+        return self.allow_edit or self.request.user.is_staff
 
     def edit_form_process(self, form, view_user):
         email = form.cleaned_data.get("email")
@@ -221,8 +235,9 @@ class EditView(UpdateView):
 
         user_profile, created = UserProfile.objects \
             .get_or_create(user=view_user)
-        user_profile.job_title = form.cleaned_data.get("job_title")
-        user_profile.organisation = form.cleaned_data.get("organisation")
+        user_profile.job_title = form.cleaned_data.get('job_title')
+        user_profile.organisation = form.cleaned_data.get('organisation')
+        user_profile.phone_number = form.cleaned_data.get('phone_number')
         user_profile.save()
 
         # save any custom fields
