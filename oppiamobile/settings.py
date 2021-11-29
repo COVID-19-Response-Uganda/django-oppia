@@ -87,9 +87,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles'
 ]
 
-<<<<<<< HEAD
-TIME_ZONE = 'Africa/Kampala'
-=======
 # Logging (automated error emails)
 LOGGING = {
     'version': 1,
@@ -115,8 +112,7 @@ LOGGING = {
     }
 }   
 
-TIME_ZONE = 'UTC'
->>>>>>> upstream/master
+TIME_ZONE = 'Africa/Kampala'
 USE_TZ = True
 SITE_ID = 1
 
