@@ -110,7 +110,7 @@ LOGGING = {
             'propagate': True,
         },
     }
-}   
+}
 
 TIME_ZONE = 'Africa/Kampala'
 USE_TZ = True
