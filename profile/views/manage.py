@@ -112,7 +112,7 @@ def export_users(request):
         'page_obj': users,
         'object_list': users.object_list,
         'page_ordering': ordering,
-        'users_list_template': 'export' })
+        'users_list_template': 'export'})
 
 @staff_member_required
 def export_all_users(request):
@@ -267,7 +267,6 @@ class UploadUsers(AdminRequiredMixin, FormView):
 
         return results
 
-
     def process_upload_file_save_user(self, row, override_fields):
         user, user_created = User.objects.get_or_create(username=row['username'])
 
@@ -289,7 +288,6 @@ class UploadUsers(AdminRequiredMixin, FormView):
             result['message'] = _(u'User updated')
 
         return result
-
 
     def update_user_fields(self, user, row, override_fields):
         if override_fields or not user.first_name:
@@ -314,7 +312,6 @@ class UploadUsers(AdminRequiredMixin, FormView):
         user.save()
         return password, auto_password
 
-
     def update_user_profile(self, user, row, override_fields):
         up, created = UserProfile.objects.get_or_create(user=user)
         for col_name in row:
@@ -322,7 +319,6 @@ class UploadUsers(AdminRequiredMixin, FormView):
                                    and not getattr(up, col_name)):
                 setattr(up, col_name, row[col_name])
         up.save()
-
 
     def update_custom_fields(self, user, row, override_fields):
         custom_fields = CustomField.objects.all()
