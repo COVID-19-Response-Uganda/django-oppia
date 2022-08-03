@@ -10,18 +10,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='dailyactiveusers',
-            unique_together=None,
-        ),
-        migrations.AlterIndexTogether(
-            name='dailyactiveusers',
-            index_together=None,
-        ),
-        migrations.DeleteModel(
-            name='DailyActiveUser',
-        ),
-        migrations.DeleteModel(
-            name='DailyActiveUsers',
-        ),
+        # migrations.AlterUniqueTogether(
+        #     name='dailyactiveusers',
+        #     unique_together=None,
+        # ),
+        # migrations.AlterIndexTogether(
+        #     name='dailyactiveusers',
+        #     index_together=None,
+        # ),
+        # migrations.DeleteModel(
+        #     name='DailyActiveUser',
+        # ),
+        # migrations.DeleteModel(
+        #     name='DailyActiveUsers',
+        # ),
     ]
